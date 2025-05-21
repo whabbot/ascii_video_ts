@@ -138,7 +138,7 @@ function createGlyph(gl: WebGLRenderingContext) {
   );
   // Asynchronously load an image
   const image = new Image();
-  image.src = "./8x8-font.png";
+  image.src = "./font.png";
   image.addEventListener("load", function () {
     // Now that the image has loaded make copy it to the texture.
     gl.bindTexture(gl.TEXTURE_2D, glyphTex);
