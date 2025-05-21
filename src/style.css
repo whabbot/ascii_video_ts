@@ -50,7 +50,7 @@ video {
   white-space: nowrap;
 }
 
-#ascii_span, #ascii_canvas {
+#ascii_span, #ascii_canvas, #ascii_webgl {
   display: none;
   background: white;
   padding: 20px;
@@ -72,6 +72,11 @@ video {
 
 #ascii_canvas {
   font-weight: 900;
+  max-width: 100%;
+  height: auto;
+}
+
+#ascii_webgl {
   max-width: 100%;
   height: auto;
 }
