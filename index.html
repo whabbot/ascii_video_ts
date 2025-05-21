@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ASCII Video</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="controls">
+        <div class="control-group">
+          <label for="scale-slider">Resolution:</label>
+          <input type="range" id="scale-slider" 
+                min="0.05" max="0.5" step="0.05" value="0.2">
+          <span id="scale-value">0.2</span>
+        </div>
+        <div class="control-group">
+          <label for="greyscale">Greyscale:</label>
+          <input type="checkbox" id="greyscale">
+        </div>
+
+        <div class="control-group">
+          <label for="renderer">Renderer:</label>
+          <select id="renderer">
+            <option value="canvas">Canvas</option>
+            <option value="span">Span</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="fps-slider">Max FPS:</label>
+          <input type="range" id="fps-slider" 
+                min="1" max="60" step="1" value="30">
+          <span id="fps-value">30</span>
+        </div>
+        <div class="control-group">
+          <span>Current FPS: </span>
+          <span id="current-fps">-</span>
+        </div>
+      </div>
+      <video id="video" autoplay></video>
+      <pre id="ascii_span"></pre>
+      <canvas id="ascii_canvas"></canvas>
+    </div>
+    <div id="loading">Loading webcam...</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
