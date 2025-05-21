@@ -1,6 +1,7 @@
 import { CONFIG } from "./types";
 import { CanvasRenderer } from "./CanvasRenderer";
 import { SpanRenderer } from "./SpanRenderer";
+import { WebGLRenderer } from "./WebGLRenderer";
 import type { BaseRenderer } from "./BaseRenderer";
 
 export class AsciiVideo {
@@ -87,26 +88,27 @@ export class AsciiVideo {
     const asciiCanvas = document.getElementById(
       "ascii_canvas"
     ) as HTMLCanvasElement;
+    const asciiWebgl = document.getElementById(
+      "ascii_webgl"
+    ) as HTMLCanvasElement;
 
     // Stop current renderer if exists
     if (this.currentRenderer) {
       this.currentRenderer.stop();
     }
 
-    // Clear and hide both renderers
-    asciiSpan.innerHTML = "";
+    // Hide renderers
     asciiSpan.classList.remove("renderer-active");
-
-    const ctx = asciiCanvas.getContext("2d");
-    if (ctx) {
-      ctx.clearRect(0, 0, asciiCanvas.width, asciiCanvas.height);
-    }
     asciiCanvas.classList.remove("renderer-active");
+    asciiWebgl.classList.remove("renderer-active");
 
     // Create new renderer
     if (rendererType === "canvas") {
       this.currentRenderer = new CanvasRenderer(this.video);
       asciiCanvas.classList.add("renderer-active");
+    } else if (rendererType === "webgl") {
+      this.currentRenderer = new WebGLRenderer(this.video);
+      asciiWebgl.classList.add("renderer-active");
     } else {
       this.currentRenderer = new SpanRenderer(this.video);
       asciiSpan.classList.add("renderer-active");

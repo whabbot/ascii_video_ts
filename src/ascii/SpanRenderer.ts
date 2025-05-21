@@ -1,8 +1,13 @@
-import { BaseRenderer } from './BaseRenderer';
+import { BaseRenderer } from "./BaseRenderer";
 
 export class SpanRenderer extends BaseRenderer {
   constructor(videoElement: HTMLVideoElement) {
     super(videoElement, "ascii_span");
+  }
+
+  stop(): void {
+    super.stop();
+    this.elements.ascii.replaceChildren();
   }
 
   protected renderFrame(pixels: Uint8ClampedArray): void {

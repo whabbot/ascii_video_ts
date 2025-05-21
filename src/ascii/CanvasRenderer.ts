@@ -1,12 +1,21 @@
-import { BaseRenderer } from './BaseRenderer';
-import { CONFIG } from './types';
+import { BaseRenderer } from "./BaseRenderer";
+import { CONFIG } from "./types";
 
 export class CanvasRenderer extends BaseRenderer {
   private asciiCtx: CanvasRenderingContext2D;
 
   constructor(videoElement: HTMLVideoElement) {
     super(videoElement, "ascii_canvas");
-    this.asciiCtx = (this.elements.ascii as HTMLCanvasElement).getContext("2d")!;
+    this.asciiCtx = (this.elements.ascii as HTMLCanvasElement).getContext(
+      "2d"
+    )!;
+  }
+
+  stop(): void {
+    super.stop();
+    (this.elements.ascii as HTMLCanvasElement)
+      .getContext("2d")!
+      .clearRect(0, 0, this.WIDTH, this.HEIGHT);
   }
 
   updateDimensions(width: number, height: number): void {
