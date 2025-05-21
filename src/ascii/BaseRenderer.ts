@@ -34,7 +34,7 @@ export abstract class BaseRenderer {
     };
 
     this.canvas = document.createElement("canvas");
-    this.ctx = this.canvas.getContext("2d")!;
+    this.ctx = this.canvas.getContext("2d", { willReadFrequently: true })!;
     this.boundProcessFrame = this.processFrame.bind(this);
     this.fpsElement = document.getElementById("current-fps");
   }
