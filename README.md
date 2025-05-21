@@ -19,7 +19,6 @@ Key features:
 
 ## TODO
 
-- Allow setting fps
 - WebGL version
 - Allow taking picture and saving
 - Take audio input and modulate the video (colour? Size of text?)
