@@ -67,23 +67,23 @@ const fontInfo: FontInfo = {
 };
 
 function makeVerticesForString(fontInfo: FontInfo, s: string) {
-  var len = s.length;
-  var numVertices = len * 6;
-  var positions = new Float32Array(numVertices * 2);
-  var texcoords = new Float32Array(numVertices * 2);
-  var offset = 0;
-  var x = 0;
-  var maxX = fontInfo.textureWidth;
-  var maxY = fontInfo.textureHeight;
-  for (var ii = 0; ii < len; ++ii) {
-    var letter = s[ii];
-    var glyphInfo = fontInfo.glyphInfos[letter];
+  const len = s.length;
+  const numVertices = len * 6;
+  const positions = new Float32Array(numVertices * 2);
+  const texcoords = new Float32Array(numVertices * 2);
+  let offset = 0;
+  let x = 0;
+  const maxX = fontInfo.textureWidth;
+  const maxY = fontInfo.textureHeight;
+  for (let ii = 0; ii < len; ++ii) {
+    const letter = s[ii];
+    const glyphInfo = fontInfo.glyphInfos[letter];
     if (glyphInfo) {
-      var x2 = x + glyphInfo.width;
-      var u1 = glyphInfo.x / maxX;
-      var v1 = (glyphInfo.y + fontInfo.letterHeight - 1) / maxY;
-      var u2 = (glyphInfo.x + glyphInfo.width - 1) / maxX;
-      var v2 = glyphInfo.y / maxY;
+      const x2 = x + glyphInfo.width;
+      const u1 = glyphInfo.x / maxX;
+      const v1 = (glyphInfo.y + fontInfo.letterHeight - 1) / maxY;
+      const u2 = (glyphInfo.x + glyphInfo.width - 1) / maxX;
+      const v2 = glyphInfo.y / maxY;
 
       // 6 vertices per letter
       positions[offset + 0] = x;
@@ -386,9 +386,9 @@ export class WebGLTest {
     const create3DFBufferInfo = createBufferInfo(create3DFVertices);
 
     // Create data for 'F'
-    var fBufferInfo = create3DFBufferInfo(gl);
+    const fBufferInfo = create3DFBufferInfo(gl);
     // Maunally create a bufferInfo
-    var textBufferInfo = {
+    const textBufferInfo = {
       attribs: {
         a_position: { buffer: gl.createBuffer(), numComponents: 2 },
         a_texcoord: { buffer: gl.createBuffer(), numComponents: 2 },
@@ -397,14 +397,14 @@ export class WebGLTest {
     };
 
     // setup GLSL programs
-    var fProgramInfo = webglUtils.createProgramInfo(
+    const fProgramInfo = webglUtils.createProgramInfo(
       gl,
       ["vertex-shader-3d", "fragment-shader-3d"],
       undefined,
       undefined,
       undefined
     );
-    var textProgramInfo = webglUtils.createProgramInfo(
+    const textProgramInfo = webglUtils.createProgramInfo(
       gl,
       ["text-vertex-shader", "text-fragment-shader"],
       undefined,
@@ -413,7 +413,7 @@ export class WebGLTest {
     );
 
     // Create a texture.
-    var glyphTex = gl.createTexture();
+    const glyphTex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, glyphTex);
     // Fill the texture with a 1x1 blue pixel.
     gl.texImage2D(
@@ -428,7 +428,7 @@ export class WebGLTest {
       new Uint8Array([0, 0, 255, 255])
     );
     // Asynchronously load an image
-    var image = new Image();
+    const image = new Image();
     image.src = "./font.png";
     image.onload = function () {
       // Now that the image has loaded make copy it to the texture.
@@ -448,7 +448,7 @@ export class WebGLTest {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     };
 
-    var names = [
+    const names = [
       "anna", // 0
       "colin", // 1
       "james", // 2
@@ -467,11 +467,11 @@ export class WebGLTest {
       "kai", // 15,
     ];
 
-    var fUniforms = {
+    const fUniforms = {
       u_matrix: m4.identity(),
     };
 
-    var textUniforms = {
+    const textUniforms = {
       u_matrix: m4.identity(),
       u_texture: glyphTex,
       u_color: [0, 0, 0, 1], // black
@@ -481,13 +481,13 @@ export class WebGLTest {
       return (d * Math.PI) / 180;
     }
 
-    var translation = [0, 30, 0];
-    var rotation = [degToRad(190), degToRad(0), degToRad(0)];
-    var scale = [1, 1, 1];
-    var fieldOfViewRadians = degToRad(60);
-    var rotationSpeed = 1.2;
+    const translation = [0, 30, 0];
+    const rotation = [degToRad(190), degToRad(0), degToRad(0)];
+    const scale = [1, 1, 1];
+    const fieldOfViewRadians = degToRad(60);
+    const rotationSpeed = 1.2;
 
-    var then = 0;
+    let then = 0;
 
     requestAnimationFrame(drawScene);
 
@@ -496,7 +496,7 @@ export class WebGLTest {
       // Convert to seconds
       now *= 0.001;
       // Subtract the previous time from the current time
-      var deltaTime = now - then;
+      const deltaTime = now - then;
       // Remember the current time for the next frame.
       then = now;
 
@@ -523,10 +523,10 @@ export class WebGLTest {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
       // Compute the matrices used for all objects
-      var aspect = glCanvas.clientWidth / glCanvas.clientHeight;
-      var zNear = 1;
-      var zFar = 2000;
-      var projectionMatrix = m4.perspective(
+      const aspect = glCanvas.clientWidth / glCanvas.clientHeight;
+      const zNear = 1;
+      const zFar = 2000;
+      const projectionMatrix = m4.perspective(
         fieldOfViewRadians,
         aspect,
         zNear,
@@ -534,18 +534,18 @@ export class WebGLTest {
       );
 
       // Compute the camera's matrix using look at.
-      var cameraRadius = 360;
-      var cameraPosition = [
+      const cameraRadius = 360;
+      const cameraPosition = [
         Math.cos(now) * cameraRadius,
         0,
         Math.sin(now) * cameraRadius,
       ];
-      var target = [0, 0, 0];
-      var up = [0, 1, 0];
-      var cameraMatrix = m4.lookAt(cameraPosition, target, up);
-      var viewMatrix = m4.inverse(cameraMatrix);
+      const target = [0, 0, 0];
+      const up = [0, 1, 0];
+      const cameraMatrix = m4.lookAt(cameraPosition, target, up);
+      const viewMatrix = m4.inverse(cameraMatrix);
 
-      var textPositions = [];
+      const textPositions = [];
 
       // setup to draw the 'F'
       gl.useProgram(fProgramInfo.program);
@@ -553,10 +553,10 @@ export class WebGLTest {
       webglUtils.setBuffersAndAttributes(gl, fProgramInfo, fBufferInfo);
 
       // draw the Fs.
-      var spread = 170;
-      for (var yy = -1; yy <= 1; ++yy) {
-        for (var xx = -2; xx <= 2; ++xx) {
-          var fViewMatrix = m4.translate(
+      const spread = 170;
+      for (let yy = -1; yy <= 1; ++yy) {
+        for (let xx = -2; xx <= 2; ++xx) {
+          let fViewMatrix = m4.translate(
             viewMatrix,
             translation[0] + xx * spread,
             translation[1] + yy * spread,
@@ -603,8 +603,8 @@ export class WebGLTest {
       webglUtils.setBuffersAndAttributes(gl, textProgramInfo, textBufferInfo);
 
       textPositions.forEach(function (pos, ndx) {
-        var name = names[ndx];
-        var s =
+        const name = names[ndx];
+        const s =
           name +
           ":" +
           pos[0].toFixed(0) +
@@ -612,7 +612,7 @@ export class WebGLTest {
           pos[1].toFixed(0) +
           "," +
           pos[2].toFixed(0);
-        var vertices = makeVerticesForString(fontInfo, s);
+        const vertices = makeVerticesForString(fontInfo, s);
 
         // update the buffers
         textBufferInfo.attribs.a_position.numComponents = 2;
@@ -639,15 +639,15 @@ export class WebGLTest {
 
         // because pos is in view space that means it's a vector from the eye to
         // some position. So translate along that vector back toward the eye some distance
-        var fromEye = m4.normalize(pos, undefined);
-        var amountToMoveTowardEye = 150; // because the F is 150 units long
-        var viewX = pos[0] - fromEye[0] * amountToMoveTowardEye;
-        var viewY = pos[1] - fromEye[1] * amountToMoveTowardEye;
-        var viewZ = pos[2] - fromEye[2] * amountToMoveTowardEye;
-        var desiredTextScale = (-1 / gl.canvas.height) * 2; // 1x1 pixels
-        var scale = viewZ * desiredTextScale;
+        const fromEye = m4.normalize(pos, undefined);
+        const amountToMoveTowardEye = 150; // because the F is 150 units long
+        const viewX = pos[0] - fromEye[0] * amountToMoveTowardEye;
+        const viewY = pos[1] - fromEye[1] * amountToMoveTowardEye;
+        const viewZ = pos[2] - fromEye[2] * amountToMoveTowardEye;
+        const desiredTextScale = (-1 / gl.canvas.height) * 2; // 1x1 pixels
+        const scale = viewZ * desiredTextScale;
 
-        var textMatrix = m4.translate(projectionMatrix, viewX, viewY, viewZ);
+        let textMatrix = m4.translate(projectionMatrix, viewX, viewY, viewZ);
         // scale the F to the size we need it.
         textMatrix = m4.scale(textMatrix, scale, scale, 1);
 
