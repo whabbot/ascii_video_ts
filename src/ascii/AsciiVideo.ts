@@ -3,6 +3,7 @@ import { CanvasRenderer } from "./CanvasRenderer";
 import { SpanRenderer } from "./SpanRenderer";
 import { WebGLRenderer } from "./WebGLRenderer";
 import type { BaseRenderer } from "./BaseRenderer";
+import { WebGLTest } from "./WebGLTest";
 
 export class AsciiVideo {
   private video: HTMLVideoElement;
@@ -116,15 +117,16 @@ export class AsciiVideo {
 
     // Initialize webcam and start rendering
     this.initWebcam().then(() => {
-      this.video.onloadeddata = () => {
-        if (this.currentRenderer) {
-          this.currentRenderer.updateDimensions(
-            this.video.videoWidth * this.scaleFactor,
-            this.video.videoHeight * this.scaleFactor
-          );
-          this.currentRenderer.start();
-        }
-      };
+      new WebGLTest().main();
+      // this.video.onloadeddata = () => {
+      //   if (this.currentRenderer) {
+      //     this.currentRenderer.updateDimensions(
+      //       this.video.videoWidth * this.scaleFactor,
+      //       this.video.videoHeight * this.scaleFactor
+      //     );
+      //     this.currentRenderer.start();
+      //   }
+      // };
     });
   }
 }
