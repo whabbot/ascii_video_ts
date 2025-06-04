@@ -20,5 +20,8 @@ Key features:
 ## TODO
 
 - WebGL version
+- three.js version?
+  - https://threejs.org/examples/?q=text#webgl_geometry_text_shapes
+  - https://github.com/mrdoob/three.js/blob/master/examples/webgl_geometry_text_shapes.html
 - Allow taking picture and saving
 - Take audio input and modulate the video (colour? Size of text?)
