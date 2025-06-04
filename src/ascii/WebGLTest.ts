@@ -142,251 +142,6 @@ export class WebGLTest {
       return;
     }
 
-    function expandRLEData(rleData: number[], padding?: number[]) {
-      padding = padding || [];
-      const data: number[] = [];
-      for (let ii = 0; ii < rleData.length; ii += 4) {
-        const runLength = rleData[ii];
-        const element = rleData.slice(ii + 1, ii + 4);
-        element.push.apply(element, padding);
-        for (let jj = 0; jj < runLength; ++jj) {
-          data.push.apply(data, element);
-        }
-      }
-      return data;
-    }
-
-    function create3DFVertices(): Record<string, Float32Array> {
-      const positions = [
-        // left column front
-        0, 0, 0, 0, 150, 0, 30, 0, 0, 0, 150, 0, 30, 150, 0, 30, 0, 0,
-
-        // top rung front
-        30, 0, 0, 30, 30, 0, 100, 0, 0, 30, 30, 0, 100, 30, 0, 100, 0, 0,
-
-        // middle rung front
-        30, 60, 0, 30, 90, 0, 67, 60, 0, 30, 90, 0, 67, 90, 0, 67, 60, 0,
-
-        // left column back
-        0, 0, 30, 30, 0, 30, 0, 150, 30, 0, 150, 30, 30, 0, 30, 30, 150, 30,
-
-        // top rung back
-        30, 0, 30, 100, 0, 30, 30, 30, 30, 30, 30, 30, 100, 0, 30, 100, 30, 30,
-
-        // middle rung back
-        30, 60, 30, 67, 60, 30, 30, 90, 30, 30, 90, 30, 67, 60, 30, 67, 90, 30,
-
-        // top
-        0, 0, 0, 100, 0, 0, 100, 0, 30, 0, 0, 0, 100, 0, 30, 0, 0, 30,
-
-        // top rung right
-        100, 0, 0, 100, 30, 0, 100, 30, 30, 100, 0, 0, 100, 30, 30, 100, 0, 30,
-
-        // under top rung
-        30, 30, 0, 30, 30, 30, 100, 30, 30, 30, 30, 0, 100, 30, 30, 100, 30, 0,
-
-        // between top rung and middle
-        30, 30, 0, 30, 60, 30, 30, 30, 30, 30, 30, 0, 30, 60, 0, 30, 60, 30,
-
-        // top of middle rung
-        30, 60, 0, 67, 60, 30, 30, 60, 30, 30, 60, 0, 67, 60, 0, 67, 60, 30,
-
-        // right of middle rung
-        67, 60, 0, 67, 90, 30, 67, 60, 30, 67, 60, 0, 67, 90, 0, 67, 90, 30,
-
-        // bottom of middle rung.
-        30, 90, 0, 30, 90, 30, 67, 90, 30, 30, 90, 0, 67, 90, 30, 67, 90, 0,
-
-        // right of bottom
-        30, 90, 0, 30, 150, 30, 30, 90, 30, 30, 90, 0, 30, 150, 0, 30, 150, 30,
-
-        // bottom
-        0, 150, 0, 0, 150, 30, 30, 150, 30, 0, 150, 0, 30, 150, 30, 30, 150, 0,
-
-        // left side
-        0, 0, 0, 0, 0, 30, 0, 150, 30, 0, 0, 0, 0, 150, 30, 0, 150, 0,
-      ];
-
-      const texcoords = [
-        // left column front
-        0.22, 0.19, 0.22, 0.79, 0.34, 0.19, 0.22, 0.79, 0.34, 0.79, 0.34, 0.19,
-
-        // top rung front
-        0.34, 0.19, 0.34, 0.31, 0.62, 0.19, 0.34, 0.31, 0.62, 0.31, 0.62, 0.19,
-
-        // middle rung front
-        0.34, 0.43, 0.34, 0.55, 0.49, 0.43, 0.34, 0.55, 0.49, 0.55, 0.49, 0.43,
-
-        // left column back
-        0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1,
-
-        // top rung back
-        0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1,
-
-        // middle rung back
-        0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 1,
-
-        // top
-        0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1,
-
-        // top rung right
-        0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1,
-
-        // under top rung
-        0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0,
-
-        // between top rung and middle
-        0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
-
-        // top of middle rung
-        0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
-
-        // right of middle rung
-        0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
-
-        // bottom of middle rung.
-        0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0,
-
-        // right of bottom
-        0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
-
-        // bottom
-        0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0,
-
-        // left side
-        0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0,
-      ];
-
-      const normals = expandRLEData([
-        // left column front
-        // top rung front
-        // middle rung front
-        18, 0, 0, 1,
-
-        // left column back
-        // top rung back
-        // middle rung back
-        18, 0, 0, -1,
-
-        // top
-        6, 0, 1, 0,
-
-        // top rung right
-        6, 1, 0, 0,
-
-        // under top rung
-        6, 0, -1, 0,
-
-        // between top rung and middle
-        6, 1, 0, 0,
-
-        // top of middle rung
-        6, 0, 1, 0,
-
-        // right of middle rung
-        6, 1, 0, 0,
-
-        // bottom of middle rung.
-        6, 0, -1, 0,
-
-        // right of bottom
-        6, 1, 0, 0,
-
-        // bottom
-        6, 0, -1, 0,
-
-        // left side
-        6, -1, 0, 0,
-      ]);
-
-      const colors = expandRLEData(
-        [
-          // left column front
-          // top rung front
-          // middle rung front
-          18, 200, 70, 120,
-
-          // left column back
-          // top rung back
-          // middle rung back
-          18, 80, 70, 200,
-
-          // top
-          6, 70, 200, 210,
-
-          // top rung right
-          6, 200, 200, 70,
-
-          // under top rung
-          6, 210, 100, 70,
-
-          // between top rung and middle
-          6, 210, 160, 70,
-
-          // top of middle rung
-          6, 70, 180, 210,
-
-          // right of middle rung
-          6, 100, 70, 210,
-
-          // bottom of middle rung.
-          6, 76, 210, 100,
-
-          // right of bottom
-          6, 140, 210, 80,
-
-          // bottom
-          6, 90, 130, 110,
-
-          // left side
-          6, 160, 160, 220,
-        ],
-        [255]
-      );
-
-      const numVerts = positions.length / 3;
-
-      const arrays = {
-        position: webglUtils.createAugmentedTypedArray(3, numVerts, undefined),
-        texcoord: webglUtils.createAugmentedTypedArray(2, numVerts, undefined),
-        normal: webglUtils.createAugmentedTypedArray(3, numVerts, undefined),
-        color: webglUtils.createAugmentedTypedArray(4, numVerts, Uint8Array),
-        indices: webglUtils.createAugmentedTypedArray(
-          3,
-          numVerts / 3,
-          Uint16Array
-        ),
-      };
-
-      // @ts-expect-error
-      arrays.position.push(positions);
-      // @ts-expect-error
-      arrays.texcoord.push(texcoords);
-      // @ts-expect-error
-      arrays.normal.push(normals);
-      // @ts-expect-error
-      arrays.color.push(colors);
-
-      for (let ii = 0; ii < numVerts; ++ii) {
-        // @ts-expect-error
-        arrays.indices.push(ii);
-      }
-
-      // @ts-expect-error
-      return arrays;
-    }
-
-    function createBufferInfo(fn: Function) {
-      return function (gl: WebGLRenderingContext) {
-        const arrays = fn.apply(null, Array.prototype.slice.call(arguments, 1));
-        return webglUtils.createBufferInfoFromArrays(gl, arrays);
-      };
-    }
-
-    const create3DFBufferInfo = createBufferInfo(create3DFVertices);
-
-    // Create data for 'F'
-    const fBufferInfo = create3DFBufferInfo(gl);
     // Maunally create a bufferInfo
     const textBufferInfo = {
       attribs: {
@@ -396,14 +151,7 @@ export class WebGLTest {
       numElements: 0,
     };
 
-    // setup GLSL programs
-    const fProgramInfo = webglUtils.createProgramInfo(
-      gl,
-      ["vertex-shader-3d", "fragment-shader-3d"],
-      undefined,
-      undefined,
-      undefined
-    );
+    // setup GLSL program
     const textProgramInfo = webglUtils.createProgramInfo(
       gl,
       ["text-vertex-shader", "text-fragment-shader"],
@@ -467,10 +215,6 @@ export class WebGLTest {
       "kai", // 15,
     ];
 
-    const fUniforms = {
-      u_matrix: m4.identity(),
-    };
-
     const textUniforms = {
       u_matrix: m4.identity(),
       u_texture: glyphTex,
@@ -481,9 +225,7 @@ export class WebGLTest {
       return (d * Math.PI) / 180;
     }
 
-    const translation = [0, 30, 0];
     const rotation = [degToRad(190), degToRad(0), degToRad(0)];
-    const scale = [1, 1, 1];
     const fieldOfViewRadians = degToRad(60);
     const rotationSpeed = 1.2;
 
@@ -533,62 +275,23 @@ export class WebGLTest {
         zFar
       );
 
-      // Compute the camera's matrix using look at.
-      const cameraRadius = 360;
-      const cameraPosition = [
-        Math.cos(now) * cameraRadius,
-        0,
-        Math.sin(now) * cameraRadius,
+      const textPositions = [
+        [-150, -300, -300],
+        [-100, -250, -300],
+        [-50, -200, -300],
+        [0, -150, -300],
+        [50, -100, -300],
+        [100, -50, -300],
+        [150, 0, -300],
+        [100, 50, -300],
+        [50, 100, -300],
+        [0, 150, -300],
+        [-50, 100, -300],
+        [-100, 50, -300],
+        [-150, 0, -300],
+        [-100, -50, -300],
+        [-50, -100, -300],
       ];
-      const target = [0, 0, 0];
-      const up = [0, 1, 0];
-      const cameraMatrix = m4.lookAt(cameraPosition, target, up);
-      const viewMatrix = m4.inverse(cameraMatrix);
-
-      const textPositions = [];
-
-      // setup to draw the 'F'
-      gl.useProgram(fProgramInfo.program);
-
-      webglUtils.setBuffersAndAttributes(gl, fProgramInfo, fBufferInfo);
-
-      // draw the Fs.
-      const spread = 170;
-      for (let yy = -1; yy <= 1; ++yy) {
-        for (let xx = -2; xx <= 2; ++xx) {
-          let fViewMatrix = m4.translate(
-            viewMatrix,
-            translation[0] + xx * spread,
-            translation[1] + yy * spread,
-            translation[2]
-          );
-          fViewMatrix = m4.xRotate(fViewMatrix, rotation[0]);
-          fViewMatrix = m4.yRotate(fViewMatrix, rotation[1] + yy * xx * 0.2);
-          fViewMatrix = m4.zRotate(
-            fViewMatrix,
-            rotation[2] + now + (yy * 3 + xx) * 0.1
-          );
-          fViewMatrix = m4.scale(fViewMatrix, scale[0], scale[1], scale[2]);
-          fViewMatrix = m4.translate(fViewMatrix, -50, -75, 0);
-          textPositions.push([
-            fViewMatrix[12],
-            fViewMatrix[13],
-            fViewMatrix[14],
-          ]);
-
-          fUniforms.u_matrix = m4.multiply(projectionMatrix, fViewMatrix);
-
-          webglUtils.setUniforms(fProgramInfo, fUniforms);
-
-          // Draw the geometry.
-          gl.drawElements(
-            gl.TRIANGLES,
-            fBufferInfo.numElements,
-            gl.UNSIGNED_SHORT,
-            0
-          );
-        }
-      }
 
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -604,15 +307,7 @@ export class WebGLTest {
 
       textPositions.forEach(function (pos, ndx) {
         const name = names[ndx];
-        const s =
-          name +
-          ":" +
-          pos[0].toFixed(0) +
-          "," +
-          pos[1].toFixed(0) +
-          "," +
-          pos[2].toFixed(0);
-        const vertices = makeVerticesForString(fontInfo, s);
+        const vertices = makeVerticesForString(fontInfo, name);
 
         // update the buffers
         textBufferInfo.attribs.a_position.numComponents = 2;
