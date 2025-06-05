@@ -1,7 +1,7 @@
 import {
-  CONFIG,
-  BRIGHTNESS_TO_ASCII,
   ASCII_CHARS,
+  BRIGHTNESS_TO_ASCII,
+  CONFIG,
   getColorString,
 } from "./types";
 

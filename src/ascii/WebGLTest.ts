@@ -1,7 +1,6 @@
-import * as webglUtils from "./webgl-utils-2";
-import * as m4 from "./m4";
 import { BaseRenderer } from "./BaseRenderer";
-import { CONFIG } from "./types";
+import * as m4 from "./m4";
+import * as webglUtils from "./webgl-utils-2";
 
 type FontInfo = {
   letterHeight: number;

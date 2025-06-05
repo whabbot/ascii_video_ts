@@ -1,8 +1,7 @@
-import { CONFIG } from "./types";
+import type { BaseRenderer } from "./BaseRenderer";
 import { CanvasRenderer } from "./CanvasRenderer";
 import { SpanRenderer } from "./SpanRenderer";
-import { WebGLRenderer } from "./WebGLRenderer";
-import type { BaseRenderer } from "./BaseRenderer";
+import { CONFIG } from "./types";
 import { WebGLTest } from "./WebGLTest";
 
 export class AsciiVideo {
