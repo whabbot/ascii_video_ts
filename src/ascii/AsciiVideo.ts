@@ -108,7 +108,7 @@ export class AsciiVideo {
       this.currentRenderer = new CanvasRenderer(this.video);
       asciiCanvas.classList.add("renderer-active");
     } else if (rendererType === "webgl") {
-      this.currentRenderer = new WebGLRenderer(this.video);
+      this.currentRenderer = new WebGLTest(this.video);
       asciiWebgl.classList.add("renderer-active");
     } else {
       this.currentRenderer = new SpanRenderer(this.video);
@@ -117,16 +117,15 @@ export class AsciiVideo {
 
     // Initialize webcam and start rendering
     this.initWebcam().then(() => {
-      new WebGLTest().main();
-      // this.video.onloadeddata = () => {
-      //   if (this.currentRenderer) {
-      //     this.currentRenderer.updateDimensions(
-      //       this.video.videoWidth * this.scaleFactor,
-      //       this.video.videoHeight * this.scaleFactor
-      //     );
-      //     this.currentRenderer.start();
-      //   }
-      // };
+      this.video.onloadeddata = () => {
+        if (this.currentRenderer) {
+          this.currentRenderer.updateDimensions(
+            this.video.videoWidth * this.scaleFactor,
+            this.video.videoHeight * this.scaleFactor
+          );
+          this.currentRenderer.start();
+        }
+      };
     });
   }
 }

@@ -1,5 +1,7 @@
 import * as webglUtils from "./webgl-utils-2";
 import * as m4 from "./m4";
+import { BaseRenderer } from "./BaseRenderer";
+import { CONFIG } from "./types";
 
 type FontInfo = {
   letterHeight: number;
@@ -134,16 +136,34 @@ function makeVerticesForString(fontInfo: FontInfo, s: string) {
     numVertices: offset / 2,
   };
 }
-export class WebGLTest {
-  main() {
-    const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
+export class WebGLTest extends BaseRenderer {
+  private gl: WebGLRenderingContext;
+  private textBufferInfo: {
+    attribs: {
+      a_position: { buffer: WebGLBuffer; numComponents: number };
+      a_texcoord: { buffer: WebGLBuffer; numComponents: number };
+    };
+    numElements: number;
+  };
+  private textProgramInfo: { [x: string]: Function };
+  private names: string[];
+  private textUniforms: {
+    u_matrix: m4.Matrix4;
+    u_texture: WebGLTexture;
+    u_color: number[];
+  };
+  private fieldOfViewRadians: number;
+
+  constructor(videoElement: HTMLVideoElement) {
+    super(videoElement, "ascii_webgl");
+    const canvas = this.elements.ascii as HTMLCanvasElement;
     const gl = canvas.getContext("webgl");
     if (!gl) {
-      return;
+      throw new Error("WebGL not supported in this browser");
     }
+    this.gl = gl;
 
-    // Maunally create a bufferInfo
-    const textBufferInfo = {
+    this.textBufferInfo = {
       attribs: {
         a_position: { buffer: gl.createBuffer(), numComponents: 2 },
         a_texcoord: { buffer: gl.createBuffer(), numComponents: 2 },
@@ -152,7 +172,7 @@ export class WebGLTest {
     };
 
     // setup GLSL program
-    const textProgramInfo = webglUtils.createProgramInfo(
+    this.textProgramInfo = webglUtils.createProgramInfo(
       gl,
       ["text-vertex-shader", "text-fragment-shader"],
       undefined,
@@ -196,7 +216,7 @@ export class WebGLTest {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
     };
 
-    const names = [
+    this.names = [
       "anna", // 0
       "colin", // 1
       "james", // 2
@@ -215,7 +235,7 @@ export class WebGLTest {
       "kai", // 15,
     ];
 
-    const textUniforms = {
+    this.textUniforms = {
       u_matrix: m4.identity(),
       u_texture: glyphTex,
       u_color: [0, 0, 0, 1], // black
@@ -225,136 +245,127 @@ export class WebGLTest {
       return (d * Math.PI) / 180;
     }
 
-    const rotation = [degToRad(190), degToRad(0), degToRad(0)];
-    const fieldOfViewRadians = degToRad(60);
-    const rotationSpeed = 1.2;
-
-    let then = 0;
-
-    requestAnimationFrame(drawScene);
-
-    // Draw the scene.
-    function drawScene(now: number) {
-      // Convert to seconds
-      now *= 0.001;
-      // Subtract the previous time from the current time
-      const deltaTime = now - then;
-      // Remember the current time for the next frame.
-      then = now;
-
-      if (!gl) {
-        return;
-      }
-
-      const glCanvas = gl.canvas as HTMLCanvasElement;
-
-      webglUtils.resizeCanvasToDisplaySize(glCanvas);
-
-      // Tell WebGL how to convert from clip space to pixels
-      gl.viewport(0, 0, glCanvas.width, glCanvas.height);
-
-      // Every frame increase the rotation a little.
-      rotation[1] += rotationSpeed * deltaTime;
-
-      gl.enable(gl.CULL_FACE);
-      gl.enable(gl.DEPTH_TEST);
-      gl.disable(gl.BLEND);
-      gl.depthMask(true);
-
-      // Clear the canvas AND the depth buffer.
-      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-      // Compute the matrices used for all objects
-      const aspect = glCanvas.clientWidth / glCanvas.clientHeight;
-      const zNear = 1;
-      const zFar = 2000;
-      const projectionMatrix = m4.perspective(
-        fieldOfViewRadians,
-        aspect,
-        zNear,
-        zFar
-      );
-
-      const textPositions = [
-        [-150, -300, -300],
-        [-100, -250, -300],
-        [-50, -200, -300],
-        [0, -150, -300],
-        [50, -100, -300],
-        [100, -50, -300],
-        [150, 0, -300],
-        [100, 50, -300],
-        [50, 100, -300],
-        [0, 150, -300],
-        [-50, 100, -300],
-        [-100, 50, -300],
-        [-150, 0, -300],
-        [-100, -50, -300],
-        [-50, -100, -300],
-      ];
-
-      gl.enable(gl.BLEND);
-      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      gl.depthMask(false);
-
-      // draw the text
-
-      // setup to draw the text.
-      // Because every letter uses the same attributes and the same progarm
-      // we only need to do this once.
-      gl.useProgram(textProgramInfo.program);
-      webglUtils.setBuffersAndAttributes(gl, textProgramInfo, textBufferInfo);
-
-      textPositions.forEach(function (pos, ndx) {
-        const name = names[ndx];
-        const vertices = makeVerticesForString(fontInfo, name);
-
-        // update the buffers
-        textBufferInfo.attribs.a_position.numComponents = 2;
-        gl.bindBuffer(
-          gl.ARRAY_BUFFER,
-          textBufferInfo.attribs.a_position.buffer
-        );
-        gl.bufferData(
-          gl.ARRAY_BUFFER,
-          vertices.arrays.position,
-          gl.DYNAMIC_DRAW
-        );
-        gl.bindBuffer(
-          gl.ARRAY_BUFFER,
-          textBufferInfo.attribs.a_texcoord.buffer
-        );
-        gl.bufferData(
-          gl.ARRAY_BUFFER,
-          vertices.arrays.texcoord,
-          gl.DYNAMIC_DRAW
-        );
-
-        // use just the position of the 'F' for the text
-
-        // because pos is in view space that means it's a vector from the eye to
-        // some position. So translate along that vector back toward the eye some distance
-        const fromEye = m4.normalize(pos, undefined);
-        const amountToMoveTowardEye = 150; // because the F is 150 units long
-        const viewX = pos[0] - fromEye[0] * amountToMoveTowardEye;
-        const viewY = pos[1] - fromEye[1] * amountToMoveTowardEye;
-        const viewZ = pos[2] - fromEye[2] * amountToMoveTowardEye;
-        const desiredTextScale = (-1 / gl.canvas.height) * 2; // 1x1 pixels
-        const scale = viewZ * desiredTextScale;
-
-        let textMatrix = m4.translate(projectionMatrix, viewX, viewY, viewZ);
-        // scale the F to the size we need it.
-        textMatrix = m4.scale(textMatrix, scale, scale, 1);
-
-        // set texture uniform
-        m4.copy(textMatrix, textUniforms.u_matrix);
-        webglUtils.setUniforms(textProgramInfo, textUniforms);
-
-        // Draw the text.
-        gl.drawArrays(gl.TRIANGLES, 0, vertices.numVertices);
-      });
-
-      requestAnimationFrame(drawScene);
-    }
+    this.fieldOfViewRadians = degToRad(60);
   }
+
+  stop(): void {
+    super.stop();
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
+
+  updateDimensions(width: number, height: number): void {
+    const charAspect = fontInfo.letterHeight / fontInfo.letterHeight;
+    this.WIDTH = Math.round(width / charAspect);
+    this.HEIGHT = Math.round(height);
+    this.canvas.width = this.WIDTH;
+    this.canvas.height = this.HEIGHT;
+
+    const asciiCanvas = this.elements.ascii as HTMLCanvasElement;
+    asciiCanvas.width = this.WIDTH * fontInfo.letterHeight;
+    asciiCanvas.height = this.HEIGHT * fontInfo.letterHeight;
+  }
+
+  protected renderFrame = (_pixels: Uint8ClampedArray): void => {
+    const gl = this.gl;
+    const glCanvas = gl.canvas as HTMLCanvasElement;
+
+    webglUtils.resizeCanvasToDisplaySize(glCanvas);
+
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+
+    gl.enable(gl.CULL_FACE);
+    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.BLEND);
+    gl.depthMask(true);
+
+    // Clear the canvas AND the depth buffer.
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // Compute the matrices used for all objects
+    const aspect = glCanvas.clientWidth / glCanvas.clientHeight;
+    const zNear = 1;
+    const zFar = 2000;
+    const projectionMatrix = m4.perspective(
+      this.fieldOfViewRadians,
+      aspect,
+      zNear,
+      zFar
+    );
+
+    const textPositions = [
+      [-150, -300, -300],
+      [-100, -250, -300],
+      [-50, -200, -300],
+      [0, -150, -300],
+      [50, -100, -300],
+      [100, -50, -300],
+      [150, 0, -300],
+      [100, 50, -300],
+      [50, 100, -300],
+      [0, 150, -300],
+      [-50, 100, -300],
+      [-100, 50, -300],
+      [-150, 0, -300],
+      [-100, -50, -300],
+      [-50, -100, -300],
+    ];
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+
+    // draw the text
+
+    // setup to draw the text.
+    // Because every letter uses the same attributes and the same progarm
+    // we only need to do this once.
+    gl.useProgram(this.textProgramInfo.program);
+    webglUtils.setBuffersAndAttributes(
+      gl,
+      this.textProgramInfo,
+      this.textBufferInfo
+    );
+
+    textPositions.forEach((pos, ndx) => {
+      const name = this.names[ndx];
+      const vertices = makeVerticesForString(fontInfo, name);
+
+      // update the buffers
+      this.textBufferInfo.attribs.a_position.numComponents = 2;
+      gl.bindBuffer(
+        gl.ARRAY_BUFFER,
+        this.textBufferInfo.attribs.a_position.buffer
+      );
+      gl.bufferData(gl.ARRAY_BUFFER, vertices.arrays.position, gl.DYNAMIC_DRAW);
+      gl.bindBuffer(
+        gl.ARRAY_BUFFER,
+        this.textBufferInfo.attribs.a_texcoord.buffer
+      );
+      gl.bufferData(gl.ARRAY_BUFFER, vertices.arrays.texcoord, gl.DYNAMIC_DRAW);
+
+      // use just the position of the 'F' for the text
+
+      // because pos is in view space that means it's a vector from the eye to
+      // some position. So translate along that vector back toward the eye some distance
+      const fromEye = m4.normalize(pos, undefined);
+      const amountToMoveTowardEye = 150; // because the F is 150 units long
+      const viewX = pos[0] - fromEye[0] * amountToMoveTowardEye;
+      const viewY = pos[1] - fromEye[1] * amountToMoveTowardEye;
+      const viewZ = pos[2] - fromEye[2] * amountToMoveTowardEye;
+      const desiredTextScale = (-1 / gl.canvas.height) * 2; // 1x1 pixels
+      const scale = viewZ * desiredTextScale;
+
+      let textMatrix = m4.translate(projectionMatrix, viewX, viewY, viewZ);
+      // scale the F to the size we need it.
+      textMatrix = m4.scale(textMatrix, scale, scale, 1);
+
+      // set texture uniform
+      m4.copy(textMatrix, this.textUniforms.u_matrix);
+      webglUtils.setUniforms(this.textProgramInfo, this.textUniforms);
+
+      // Draw the text.
+      gl.drawArrays(gl.TRIANGLES, 0, vertices.numVertices);
+    });
+  };
 }
