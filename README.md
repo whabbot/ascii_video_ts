@@ -5,7 +5,7 @@ Users can adjust the resolution, toggle greyscale mode, and choose between diffe
 
 The application demonstrates:
 
-- Real-time video processing using the WebRTC API
+- Real-time video processing using the WebGL API
 - Canvas manipulation for video processing
 - Dynamic ASCII art generation
 - Performance-optimized rendering techniques
