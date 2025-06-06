@@ -17,7 +17,7 @@ type FontInfo = {
   };
 };
 
-const fontInfo: FontInfo = {
+const old_fontInfo: FontInfo = {
   letterHeight: 8,
   spaceWidth: 8,
   spacing: -1,
@@ -64,6 +64,82 @@ const fontInfo: FontInfo = {
     "*": { x: 40, y: 32, width: 8 },
     "!": { x: 48, y: 32, width: 8 },
     "?": { x: 56, y: 32, width: 8 },
+  },
+};
+
+const fontInfo: FontInfo = {
+  letterHeight: 23,
+  spaceWidth: 23,
+  spacing: -1,
+  textureWidth: 506,
+  textureHeight: 69,
+  glyphInfos: {
+    $: { x: 0, y: 0, width: 23 },
+    "@": { x: 23, y: 0, width: 23 },
+    B: { x: 46, y: 0, width: 23 },
+    "%": { x: 69, y: 0, width: 23 },
+    "8": { x: 92, y: 0, width: 23 },
+    "&": { x: 115, y: 0, width: 23 },
+    W: { x: 138, y: 0, width: 23 },
+    M: { x: 161, y: 0, width: 23 },
+    "#": { x: 184, y: 0, width: 23 },
+    "*": { x: 207, y: 0, width: 23 },
+    o: { x: 230, y: 0, width: 23 },
+    a: { x: 253, y: 0, width: 23 },
+    h: { x: 276, y: 0, width: 23 },
+    k: { x: 299, y: 0, width: 23 },
+    b: { x: 322, y: 0, width: 23 },
+    d: { x: 345, y: 0, width: 23 },
+    p: { x: 368, y: 0, width: 23 },
+    q: { x: 391, y: 0, width: 23 },
+    w: { x: 414, y: 0, width: 23 },
+    m: { x: 437, y: 0, width: 23 },
+    Z: { x: 460, y: 0, width: 23 },
+    O: { x: 483, y: 0, width: 23 },
+    "0": { x: 0, y: 23, width: 23 },
+    Q: { x: 23, y: 23, width: 23 },
+    L: { x: 46, y: 23, width: 23 },
+    C: { x: 69, y: 23, width: 23 },
+    J: { x: 92, y: 23, width: 23 },
+    U: { x: 115, y: 23, width: 23 },
+    Y: { x: 138, y: 23, width: 23 },
+    X: { x: 161, y: 23, width: 23 },
+    z: { x: 184, y: 23, width: 23 },
+    c: { x: 207, y: 23, width: 23 },
+    v: { x: 230, y: 23, width: 23 },
+    u: { x: 253, y: 23, width: 23 },
+    n: { x: 276, y: 23, width: 23 },
+    x: { x: 299, y: 23, width: 23 },
+    r: { x: 322, y: 23, width: 23 },
+    j: { x: 345, y: 23, width: 23 },
+    f: { x: 368, y: 23, width: 23 },
+    t: { x: 391, y: 23, width: 23 },
+    "/": { x: 414, y: 23, width: 23 },
+    "\\": { x: 437, y: 23, width: 23 },
+    "|": { x: 460, y: 23, width: 23 },
+    "(": { x: 483, y: 23, width: 23 },
+    ")": { x: 0, y: 46, width: 23 },
+    "1": { x: 23, y: 46, width: 23 },
+    "{": { x: 46, y: 46, width: 23 },
+    "}": { x: 69, y: 46, width: 23 },
+    "[": { x: 92, y: 46, width: 23 },
+    "]": { x: 115, y: 46, width: 23 },
+    "?": { x: 138, y: 46, width: 23 },
+    "-": { x: 161, y: 46, width: 23 },
+    _: { x: 184, y: 46, width: 23 },
+    "+": { x: 207, y: 46, width: 23 },
+    "~": { x: 230, y: 46, width: 23 },
+    i: { x: 253, y: 46, width: 23 },
+    "!": { x: 276, y: 46, width: 23 },
+    l: { x: 299, y: 46, width: 23 },
+    I: { x: 322, y: 46, width: 23 },
+    ";": { x: 345, y: 46, width: 23 },
+    ":": { x: 368, y: 46, width: 23 },
+    ",": { x: 391, y: 46, width: 23 },
+    '"': { x: 414, y: 46, width: 23 },
+    "^": { x: 437, y: 46, width: 23 },
+    "`": { x: 460, y: 46, width: 23 },
+    ".": { x: 483, y: 46, width: 23 },
   },
 };
 
@@ -196,7 +272,7 @@ export class WebGLTest extends BaseRenderer {
     );
     // Asynchronously load an image
     const image = new Image();
-    image.src = "./font.png";
+    image.src = "./ascii_font.png";
     image.onload = function () {
       // Now that the image has loaded make copy it to the texture.
       gl.bindTexture(gl.TEXTURE_2D, glyphTex);
@@ -216,22 +292,21 @@ export class WebGLTest extends BaseRenderer {
     };
 
     this.names = [
-      "anna", // 0
-      "colin", // 1
-      "james", // 2
-      "danny", // 3
-      "kalin", // 4
-      "hiro", // 5
-      "eddie", // 6
-      "shu", // 7
-      "brian", // 8
-      "tami", // 9
-      "rick", // 10
-      "gene", // 11
-      "natalie", // 12,
-      "evan", // 13,
-      "sakura", // 14,
-      "kai", // 15,
+      "o",
+      "a",
+      "h",
+      "k",
+      "b",
+      "d",
+      "p",
+      "q",
+      "w",
+      "m",
+      "Z",
+      "O",
+      "Q",
+      "L",
+      "C",
     ];
 
     this.textUniforms = {
